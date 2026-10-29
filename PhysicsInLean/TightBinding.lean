@@ -79,8 +79,8 @@ variable {N}
 This can be refined and moved to same file as Finset.sum_ite_eq
 -/
 lemma Finset.sum_ite_add_eq_sum_ite_sub (m n : Fin N) (f : Fin N → ℂ) :
-      (∑ x, if n = x + m then f x else 0) = ∑ x, if n - m = x then f x else 0 := by
-    simp_rw [sub_eq_iff_eq_add]
+   (∑ x, if n = x + m then f x else 0) = ∑ x, if n - m = x then f x else 0 := by
+  simp_rw [sub_eq_iff_eq_add]
 
 variable (N)
 
@@ -113,21 +113,6 @@ open lp
 
 theorem sum_sq_norm_planeWaveFun_eq_one : ∑ x : Fin N, ‖planeWaveFun N u x‖^2 = 1 := by
   simp [planeWaveFun, norm_u, one_pow]
-
-theorem planeWaveFun_memℓp : Memℓp (planeWaveFun N u) 2 := by
-  unfold Memℓp
-  simp only [OfNat.ofNat_ne_zero, ↓reduceIte, ENNReal.ofNat_ne_top, ENNReal.toReal_ofNat,
-    Real.rpow_ofNat]
-  use 1
-  suffices (∑ i, ‖planeWaveFun N u i‖ ^ 2) = 1 by
-    rw [← this]
-    exact hasSum_fintype _
-  apply sum_sq_norm_planeWaveFun_eq_one
-
--- noncomputable def planeWave : ℓ²(Fin N, ℂ) := {
---   val := planeWaveFun N u
---   property := planeWaveFun_memℓp N u
--- }
 
 noncomputable def planeWave : EuclideanSpace ℂ (Fin N) where
   ofLp i := planeWaveFun N u i
@@ -184,20 +169,6 @@ theorem orthonormal_planeWaves : Orthonormal ℂ (planeWave N) := by
     norm_cast
     simp [u_pow]
 
--- noncomputable instance : Fintype (rootsOfUnity N ℂ) where
---   elems := Finset.univ.image fun (i : Fin N) =>
---     let val := exp (2 * Real.pi * I * (i.val / N))
---     let unit_val := Units.mk0 val (exp_ne_zero _)
---     ⟨unit_val, (Complex.mem_rootsOfUnity N unit_val).mpr
---       ⟨i, i.isLt, by simp only [unit_val, val, Units.val_mk0]⟩⟩
---   complete := by
---     intro ⟨x, hx⟩
---     obtain ⟨i, h_lt, h_eq⟩ := (Complex.mem_rootsOfUnity N x).mp hx
---     simp only [Finset.mem_image, Finset.mem_univ, true_and]
---     use ⟨i, h_lt⟩
---     ext
---     exact h_eq
-
 noncomputable local instance : Fintype (rootsOfUnity N ℂ) := Fintype.ofFinite _
 
 -- 2. Construct the complete orthonormal basis using the orthonormality proof
@@ -214,7 +185,6 @@ theorem orthonormal_planeWavesBasis : Orthonormal ℂ (planeWaveBasis N) := by
   exact orthonormal_planeWaves N
 
 open Module
-
 
 noncomputable def planeWaveOrthonormalBasis :
     OrthonormalBasis (rootsOfUnity N ℂ) ℂ (EuclideanSpace ℂ (Fin N)) :=
