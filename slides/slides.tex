@@ -1,0 +1,775 @@
+\documentclass[aspectratio=169, 10pt]{beamer}
+
+% ============================================================================
+% PACKAGES & ENCODING (Configured for pdflatex + Lean 4 Unicode)
+% ============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath, amssymb, amsfonts, mathtools}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Global Unicode mappings for normal text and \texttt{...}
+\DeclareUnicodeCharacter{21A6}{\ensuremath{\mapsto}}
+\DeclareUnicodeCharacter{2192}{\ensuremath{\to}}
+\DeclareUnicodeCharacter{2190}{\ensuremath{\leftarrow}}
+\DeclareUnicodeCharacter{2194}{\ensuremath{\leftrightarrow}}
+\DeclareUnicodeCharacter{211D}{\ensuremath{\mathbb{R}}}
+\DeclareUnicodeCharacter{2102}{\ensuremath{\mathbb{C}}}
+\DeclareUnicodeCharacter{2115}{\ensuremath{\mathbb{N}}}
+\DeclareUnicodeCharacter{211A}{\ensuremath{\mathbb{Q}}}
+\DeclareUnicodeCharacter{210B}{\ensuremath{\mathcal{H}}}
+\DeclareUnicodeCharacter{2022}{\ensuremath{\bullet}}
+\DeclareUnicodeCharacter{2200}{\ensuremath{\forall}}
+\DeclareUnicodeCharacter{2203}{\ensuremath{\exists}}
+\DeclareUnicodeCharacter{2227}{\ensuremath{\land}}
+\DeclareUnicodeCharacter{2228}{\ensuremath{\lor}}
+\DeclareUnicodeCharacter{00AC}{\ensuremath{\neg}}
+\DeclareUnicodeCharacter{2208}{\ensuremath{\in}}
+\DeclareUnicodeCharacter{2260}{\ensuremath{\neq}}
+\DeclareUnicodeCharacter{2264}{\ensuremath{\le}}
+\DeclareUnicodeCharacter{2211}{\ensuremath{\sum}}
+\DeclareUnicodeCharacter{221A}{\ensuremath{\sqrt{}}}
+\DeclareUnicodeCharacter{207B}{\ensuremath{^-}}
+\DeclareUnicodeCharacter{00B9}{\ensuremath{^1}}
+\DeclareUnicodeCharacter{00B2}{\ensuremath{^2}}
+\DeclareUnicodeCharacter{2113}{\ensuremath{\ell}}
+\DeclareUnicodeCharacter{2295}{\ensuremath{\oplus}}
+\DeclareUnicodeCharacter{00D7}{\ensuremath{\times}}
+\DeclareUnicodeCharacter{03B1}{\ensuremath{\alpha}}
+\DeclareUnicodeCharacter{03B2}{\ensuremath{\beta}}
+\DeclareUnicodeCharacter{03BC}{\ensuremath{\mu}}
+\DeclareUnicodeCharacter{03C8}{\ensuremath{\psi}}
+\DeclareUnicodeCharacter{03A8}{\ensuremath{\Psi}}
+\DeclareUnicodeCharacter{2080}{\ensuremath{_0}}
+\DeclareUnicodeCharacter{2081}{\ensuremath{_1}}
+\DeclareUnicodeCharacter{2082}{\ensuremath{_2}}
+\DeclareUnicodeCharacter{1D65}{\ensuremath{_v}}
+\DeclareUnicodeCharacter{2016}{\ensuremath{\|}}
+\DeclareUnicodeCharacter{00B7}{\ensuremath{\cdot}}
+\DeclareUnicodeCharacter{22A2}{\ensuremath{\vdash}}
+\DeclareUnicodeCharacter{00B7}{\ensuremath{\cdot}}
+\DeclareUnicodeCharacter{208A}{\ensuremath{_+}}
+\DeclareUnicodeCharacter{208B}{\ensuremath{_-}}
+\DeclareUnicodeCharacter{03B5}{\ensuremath{\varepsilon}} % ε
+\DeclareUnicodeCharacter{03BB}{\ensuremath{\lambda}}     % λ
+\DeclareUnicodeCharacter{03C9}{\ensuremath{\omega}}      % ω
+\DeclareUnicodeCharacter{03D5}{\ensuremath{\phi}}        % ϕ
+\DeclareUnicodeCharacter{03C6}{\ensuremath{\varphi}}     % φ
+\DeclareUnicodeCharacter{2208}{\ensuremath{\in}}         % ∈
+\DeclareUnicodeCharacter{2211}{\ensuremath{\sum}}        % ∑
+\DeclareUnicodeCharacter{27E8}{\ensuremath{\langle}}     % ⟨
+\DeclareUnicodeCharacter{27E9}{\ensuremath{\rangle}}     % ⟩
+\DeclareUnicodeCharacter{221A}{\ensuremath{\sqrt{}}}
+\DeclareUnicodeCharacter{1D65}{\ensuremath{_v}}
+\DeclareUnicodeCharacter{207B}{\ensuremath{^-}}
+\DeclareUnicodeCharacter{00B9}{\ensuremath{^1}}
+\DeclareUnicodeCharacter{2022}{\ensuremath{\bullet}}
+
+% ============================================================================
+% BEAMER THEME & COLORS
+% ============================================================================
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+
+\definecolor{leanblue}{RGB}{0, 90, 180}
+\definecolor{leankeyword}{RGB}{150, 0, 130}
+\definecolor{leancomment}{RGB}{90, 130, 90}
+\definecolor{leanbg}{RGB}{248, 249, 252}
+
+% ============================================================================
+% LEAN 4 LISTINGS CONFIGURATION
+% ============================================================================
+\lstdefinelanguage{Lean4}{
+  extendedchars=false,
+  columns=fullflexible,
+  keepspaces=true,
+  upquote=true,
+  basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{leanbg},
+  frame=single,
+  rulecolor=\color{black!15},
+  xleftmargin=4pt,
+  xrightmargin=4pt,
+  aboveskip=6pt,
+  belowskip=4pt,
+  breaklines=true,
+  showstringspaces=false,
+  morekeywords=[1]{
+    def, theorem, lemma, example, inductive, structure, class, instance,
+    where, by, fun, match, with, if, then, else, let, have, show, from,
+    open, scoped, variable, import, noncomputable, omit, private, local
+  },
+  morekeywords=[2]{
+    Prop, Type, Nat, Int, Real, Complex, Fin, List, Or, And, Eq, False, True,
+    Matrix, EuclideanSpace, Orthonormal, OrthonormalBasis, Memlp, rootsOfUnity
+  },
+  morekeywords=[3]{
+    intro, exact, apply, rw, simp, simp_rw, unfold, rcases, cases,
+    constructor, ext, ring, norm_num, norm_cast, field_simp, obtain, use, suffices, simpa
+  },
+  keywordstyle=[1]\color{leanblue}\bfseries,
+  keywordstyle=[2]\color{teal!80!black}\bfseries,
+  keywordstyle=[3]\color{leankeyword}\bfseries,
+  comment=[l]{--},
+  morecomment=[s]{/-}{-/},
+  commentstyle=\color{leancomment}\itshape,
+  literate=
+    {ℂ}{{$\mathbb{C}$}}1
+    {ℝ}{{$\mathbb{R}$}}1
+    {ℚ}{{$\mathbb{Q}$}}1
+    {ℕ}{{$\mathbb{N}$}}1
+    {ℋ}{{$\mathcal{H}$}}1
+    {ℓ}{{$\ell$}}1
+    {Ψ}{{$\Psi$}}1
+    {ψ}{{$\psi$}}1
+    {μ}{{$\mu$}}1
+    {α}{{$\alpha$}}1
+    {β}{{$\beta$}}1
+    {₀}{{$_0$}}1
+    {₁}{{$_1$}}1
+    {₂}{{$_2$}}1
+    {ᵥ}{{$_v$}}1
+    {⁻¹}{{$^{-1}$}}2
+    {²}{{$^2$}}1
+    {→}{{$\to$}}1
+    {←}{{$\leftarrow$}}1
+    {↔}{{$\leftrightarrow$}}1
+    {=>}{{$\mapsto$}}2
+    {∀}{{$\forall$}}1
+    {∃}{{$\exists$}}1
+    {∈}{{$\in$}}1
+    {≠}{{$\neq$}}1
+    {≤}{{$\le$}}1
+    {•}{{$\bullet$}}1
+    {∧}{{$\land$}}1
+    {∨}{{$\lor$}}1
+    {¬}{{$\neg$}}1
+    {×}{{$\times$}}1
+    {⊕}{{$\oplus$}}1
+    {∑}{{$\sum$}}1
+    {√}{{$\sqrt{}$}}1
+    {‖}{{$\|$}}1
+    {·}{{$\cdot$}}1
+    {⊢}{{$\vdash$}}1
+    {₊}{{$\ensuremath{_{+}}$}}1
+    {₋}{{$\ensuremath{_{-}}$}}1
+    {ε}{{$\varepsilon$}}1
+    {λ}{{$\lambda$}}1
+    {ω}{{$\omega$}}1
+    {∈}{{$\in$}}1
+    {∑}{{$\sum$}}1
+    {⟨}{{$\langle$}}1
+    {⟩}{{$\rangle$}}1
+    {√}{{$\sqrt{}$}}1
+    {ᵥ}{{$_v$}}1
+    {⁻}{{$^-$}}1
+    {¹}{{$^1$}}1
+    {•}{{$\bullet$}}1
+}
+
+% ============================================================================
+% TITLE METADATA (SLIDE 1)
+% ============================================================================
+\title[Lean 4 for Physicists]{Formalizing Physics in Lean 4}
+\author[M. Pacholski]{Micha\l{} Pacholski}
+\institute[Google / FUW Alumnus]{
+  Software Engineer, Google Warsaw \\
+  \smallskip
+  \textit{Faculty of Physics, University of Warsaw (FUW)}
+}
+\date{30 October 2026}
+
+\begin{document}
+
+% ----------------------------------------------------------------------------
+% SLIDE 1: Title Slide
+% ----------------------------------------------------------------------------
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% ============================================================================
+% SECTION 1: INTRODUCTION & MOTIVATION
+% ============================================================================
+\section{Introduction \& Motivation}
+
+% ----------------------------------------------------------------------------
+% SLIDE 2: Self-Introduction
+% ----------------------------------------------------------------------------
+\begin{frame}{About Me: From Condensed Matter to Software \& Back}
+  \textbf{Academic \& Industry Trajectory}
+  \begin{itemize}
+    \item \textbf{University of Warsaw (FUW):} BSc \& MSc in Physics.
+    \item \textbf{Leiden University:} PhD in Theoretical Condensed Matter Physics.
+    \item \textbf{MPI-PKS Dresden:} Postdoctoral Researcher in Condensed Matter Theory.
+    \item \textbf{Google Warsaw (2024--present):} Software Engineer.
+  \end{itemize}
+
+  \vspace{0.3cm}
+  \begin{block}{Exploring Lean 4}
+    \begin{itemize}
+      \item Around 2024, I began exploring \textbf{Lean 4} as a personal passion project.
+      \item It sits right at the intersection of my two worlds: theoretical physics and modern software engineering.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% SLIDE 3: Presentation Outline
+% ----------------------------------------------------------------------------
+\begin{frame}{Outline of Today's Seminar}
+  \begin{enumerate}
+    \setlength{\itemsep}{6pt}
+    \item \textbf{Why Learn Lean 4?} \\
+      {\small Verification in the age of AI and importing mathematics like a software codebase.}
+
+    \item \textbf{Fundamentals of Functional Programming} \\
+      {\small Pure expressions, immutability, curried functions, and higher-order operators.}
+
+    \item \textbf{Basic Lean 4 Syntax \& Data Types} \\
+      {\small \texttt{\#check}, \texttt{\#eval}, \texttt{def}, products, sums, structures, and inductive types (\texttt{Nat}, \texttt{List}).}
+
+    \item \textbf{The Curry--Howard Isomorphism} \\
+      {\small Propositions as types, proofs as functional programs, and dependent types.}
+
+    \item \textbf{Proving Theorems in Lean: Term Mode vs.\ Tactics} \\
+      {\small Direct term construction vs.\ interactive tactic proofs (\texttt{intro}, \texttt{rw}, \texttt{simp}).}
+
+    \item \textbf{Condensed Matter Case Study: The 1D Tight-Binding Chain} \\
+      {\small Periodic boundary conditions via \texttt{Fin N}, Bloch waves via \texttt{rootsOfUnity}, and an exact orthonormal eigenbasis.}
+  \end{enumerate}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% SLIDE 4: Why Learn Lean 4? (Part I — Verification in the Age of AI)
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{Why Learn Lean 4? I. Verification in the Age of AI}
+  \begin{columns}[T]
+    \begin{column}{0.50\textwidth}
+      \textbf{Informal Derivations Can Be Hallucinated}
+      \begin{itemize}
+        \item LLMs can generate natural-language mathematical arguments and informal derivations that read smoothly to a human.
+        \item Yet the entire argument---or a critical link in the reasoning---can be completely hallucinated.
+        \item Checking an LLM's informal derivation line-by-line is slow, exhausting, and error-prone.
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{0.46\textwidth}
+      \begin{alertblock}{The Solution: Dual Output}
+        \begin{itemize}
+          \item Require the AI to produce \textbf{both} an informal explanation \emph{and} formal \textbf{Lean 4 code}.
+          \item Lean's kernel automatically verifies that the proof is logically sound.
+          \item \textbf{Your job as a physicist:} Check that the Lean \texttt{def} and \texttt{theorem} statements actually match the informal claim!
+        \end{itemize}
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.2cm}
+\begin{lstlisting}[language=Lean4]
+-- You don't need to read the proof behind "by"; just verify the statement matches the claim:
+theorem isEigenvector_planeWave :
+    (hamiltonian N μ t) *ᵥ planeWave N u =
+    (μ + t * u.val⁻¹ + star t * u.val) • planeWave N u := by ...
+\end{lstlisting}
+\end{frame}
+
+
+% ----------------------------------------------------------------------------
+% SLIDE 5: Why Learn Lean 4? (Part II — Physics as an Importable Codebase)
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{Why Learn Lean 4? II. Physics as an Importable Codebase}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{How Software Scales (e.g.\ at Google)}
+      \begin{itemize}
+        \item Thousands of engineers collaborate on one massive codebase over many years.
+        \item You don't rewrite basic utilities---you \texttt{import} existing libraries, and the compiler guarantees compatibility.
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \textbf{How Theoretical Physics Works Today}
+      \begin{itemize}
+        \item Results live in static PDF papers with varying notations and implicit assumptions.
+        \item Every new paper or textbook re-derives the same sums, integrals, and linear algebra from scratch.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.15cm}
+  \textbf{Lean's \texttt{Mathlib}:} A unified codebase of pure mathematics (linear algebra, analysis, algebra) that we can directly \texttt{import} to build a shared codebase for physics:
+
+\begin{lstlisting}[language=Lean4]
+import Mathlib.LinearAlgebra.Matrix.Hermitian
+import Mathlib.RingTheory.RootsOfUnity.Complex
+import Mathlib.Analysis.InnerProductSpace.PiL2
+\end{lstlisting}
+\end{frame}
+
+
+% ============================================================================
+% SECTION 2: FUNDAMENTALS OF FUNCTIONAL PROGRAMMING
+% ============================================================================
+\section{Fundamentals of Functional Programming}
+
+% ----------------------------------------------------------------------------
+% SLIDE 6: Fundamentals of Functional Programming
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{Fundamentals of Functional Programming}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Imperative (Python, C++, Fortran)}
+      \begin{itemize}
+        \item Sequence of \textbf{state mutations} (\texttt{x = x + 1}) and in-place side effects.
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \textbf{Functional (Lean 4, Haskell, OCaml)}
+      \begin{itemize}
+        \item Evaluation of \textbf{pure, immutable expressions}: \texttt{f x} always yields the same result.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.15cm}
+  \textbf{Key Functional Concepts in Lean 4:}
+  \begin{itemize}
+    \item \textbf{Everything has a type (\texttt{x : T}):} Numbers, functions, types, and even proofs.
+    \item \textbf{First-class functions (\texttt{f : A → B}):} A function mapping inputs of type \texttt{A} to outputs of type \texttt{B} has type signature \texttt{A → B}. Functions are ordinary values and can be passed to higher-order functions (like operators in physics).
+    \item \textbf{Currying (\texttt{A → B → C}):} Read as \texttt{A → (B → C)}---a two-argument function takes an \texttt{A} and returns a new function of type \texttt{B → C}.
+  \end{itemize}
+
+\begin{lstlisting}[language=Lean4]
+-- Anonymous function (lambda) of type ℕ → ℕ:
+fun (x : ℕ) => x + 1
+-- Higher-order function of type (ℕ → ℕ) → ℕ → ℕ:
+def applyTwice (f : ℕ → ℕ) (x : ℕ) : ℕ := f (f x)
+\end{lstlisting}
+\end{frame}
+
+% ============================================================================
+% SECTION 3: BASIC LEAN 4 SYNTAX & DATA TYPES
+% ============================================================================
+\section{Basic Lean 4 Syntax \& Data Types}
+
+% ----------------------------------------------------------------------------
+% SLIDE 7: Basic Lean Syntax — def, #check, and #eval
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{Basic Lean 4 Syntax: \texttt{def}, \texttt{\#check}, and \texttt{\#eval}}
+  \textbf{Interacting with the Lean 4 Compiler:}
+  \begin{itemize}
+    \item \texttt{def} binds a name to a value or function with explicit parameter and return types.
+    \item \texttt{\#check} asks Lean to infer and display the \textbf{type signature} of an expression without evaluating it.
+    \item \texttt{\#eval} executes a computable expression and prints its resulting \textbf{value}.
+  \end{itemize}
+
+\begin{lstlisting}[language=Lean4]
+-- Define a constant and a curried two-argument function:
+def n : ℕ := 5
+def add (x : ℕ) (y : ℕ) : ℕ := x + y
+
+-- Inspect types with #check (notice how partial application works!):
+#check n          -- n : ℕ
+#check add        -- add : ℕ → ℕ → ℕ
+#check add 2      -- add 2 : ℕ → ℕ   (partially applied function!)
+#check add 2 3    -- add 2 3 : ℕ
+
+-- Compute values with #eval:
+#eval add 2 3     -- 5
+\end{lstlisting}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% SLIDE 8: Combining Data I — Product Types and Structures
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{Combining Data I: Product Types and \texttt{structure}}
+  \textbf{Holding Multiple Values Simultaneously:}
+  \begin{itemize}
+    \item \textbf{Product Types (\texttt{A × B}):} Hold \textbf{both} an \texttt{A} \emph{and} a \texttt{B} as an anonymous pair \texttt{(a, b)}. Fields are accessed via \texttt{.1} and \texttt{.2} (or \texttt{.fst} and \texttt{.snd}).
+    \item \textbf{Structures (\texttt{structure}):} Define a custom, named product type with readable field names instead of positional indices.
+  \end{itemize}
+
+  \vspace{0.15cm}
+\begin{lstlisting}[language=Lean4]
+-- Anonymous product type (pair):
+def p : ℕ × ℝ := (3, 2.5)
+#eval p.1    -- 3
+#eval p.2    -- 2.5
+
+-- Named structure:
+structure Point2D where
+  x : ℝ
+  y : ℝ
+
+def pt : Point2D := { x := 1.0, y := -1.0 }
+#check pt.x  -- pt.x : ℝ
+\end{lstlisting}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% SLIDE 9: Combining Data II — Sum Types and Pattern Matching
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{Combining Data II: Sum Types (\texttt{A ⊕ B})}
+  \textbf{Representing Alternatives (Disjoint Unions):}
+  \begin{itemize}
+    \item \textbf{Sum Types (\texttt{A ⊕ B} or \texttt{Sum A B}):} Hold \textbf{either} a value of type \texttt{A} (tagged with \texttt{Sum.inl a}) \emph{or} a value of type \texttt{B} (tagged with \texttt{Sum.inr b}).
+    \item \textbf{Pattern Matching (\texttt{match ... with}):} To use a sum type, we must provide a branch for every possible constructor---the compiler guarantees no case is forgotten!
+  \end{itemize}
+
+  \vspace{0.15cm}
+\begin{lstlisting}[language=Lean4]
+-- Constructing values of a Sum type (ℕ ⊕ ℝ):
+def s1 : ℕ ⊕ ℝ := Sum.inl 42
+def s2 : ℕ ⊕ ℝ := Sum.inr 3.14
+
+-- Consuming a Sum type via pattern matching:
+def toReal (s : ℕ ⊕ ℝ) : ℝ :=
+  match s with
+  | Sum.inl n => (n : ℝ)
+  | Sum.inr r => r
+\end{lstlisting}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% SLIDE 10: Recursive Inductive Data Types — Nat and List
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{Inductive Data Types: \texttt{Nat} and \texttt{List}}
+  In Lean 4, even numbers and containers are not built-in ``magic'' primitives---they are defined from scratch as \textbf{recursive inductive types} (\texttt{inductive}):
+
+  \vspace{0.1cm}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{1. Peano Natural Numbers (\texttt{Nat} / \texttt{ℕ})}
+      \begin{itemize}
+        \item \texttt{zero}: the base number $0$.
+        \item \texttt{succ n}: the successor $n + 1$ of an existing \texttt{n : Nat}.
+        \item \texttt{2} is syntax sugar for \texttt{succ (succ zero)}.
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \textbf{2. Polymorphic Lists (\texttt{List α})}
+      \begin{itemize}
+        \item \texttt{nil}: the empty list \texttt{[]}.
+        \item \texttt{cons head tail}: an element \texttt{head : α} prepended to \texttt{tail : List α} (written \texttt{head :: tail}).
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.1cm}
+\begin{lstlisting}[language=Lean4]
+-- How Nat and List are defined in Lean's standard library:
+inductive Nat where
+  | zero : Nat
+  | succ (n : Nat) : Nat
+
+inductive List (α : Type) where
+  | nil  : List α
+  | cons (head : α) (tail : List α) : List α
+\end{lstlisting}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% SLIDE 11: Pattern Matching & Recursion on Nat and List
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{Pattern Matching \& Structural Recursion}
+  Functions on inductive types are defined by \textbf{pattern matching} on each constructor. Lean ensures termination by checking that recursive calls only happen on smaller subterms:
+
+  \vspace{0.15cm}
+\begin{lstlisting}[language=Lean4]
+-- Addition on Nat by recursion on the second argument:
+def myAdd (m n : Nat) : Nat :=
+  match n with
+  | Nat.zero   => m
+  | Nat.succ k => Nat.succ (myAdd m k)
+
+-- Length of a polymorphic List (using [] for nil and x :: xs for cons):
+def myLength (xs : List α) : Nat :=
+  match xs with
+  | []      => 0
+  | _ :: tl => 1 + myLength tl
+
+#eval myAdd 3 2             -- 5
+#eval myLength [10, 20, 30] -- 3
+\end{lstlisting}
+\end{frame}
+
+% ============================================================================
+% SECTION 4: THE CURRY-HOWARD ISOMORPHISM
+% ============================================================================
+\section{The Curry--Howard Isomorphism}
+
+% ----------------------------------------------------------------------------
+% SLIDE 12: The Curry-Howard Isomorphism — Propositions as Types
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{The Curry--Howard Isomorphism: Propositions as Types}
+  In Lean 4, there is no boundary between \textbf{programming} and \textbf{proving}:
+  \begin{itemize}
+    \item A mathematical \textbf{proposition} $P$ is simply a \textbf{type} (\texttt{P : Prop}).
+    \item A \textbf{proof} of $P$ is a \textbf{program (value)} $p$ of type $P$ (\texttt{p : P}).
+    \item Checking if a proof is valid is literally \textbf{type-checking} the program!
+  \end{itemize}
+
+  \vspace{0.15cm}
+  \begin{center}
+  \small
+  \begin{tabular}{lll}
+    \textbf{Functional Programming} & \textbf{Lean 4 Syntax} & \textbf{Logic (Mathematics)} \\
+    \hline
+    Type & \texttt{P : Prop} & Proposition $P$ \\
+    Value / Term of type $P$ & \texttt{h : P} & Proof of $P$ \\
+    Empty / Unit type & \texttt{Empty}/\texttt{Unit} \uncover<2->{(\texttt{False}/\texttt{True})} & \uncover<2->{Falsehood / Truth} \\
+    Function type & \texttt{P → Q} & \uncover<3->{Implication ($P \to Q$)} \\
+    Product type & \texttt{A × B} \uncover<4->{(\texttt{P ∧ Q})} & \uncover<4->{Conjunction ($P \land Q$)} \\
+    Sum type & \texttt{A ⊕ B} \uncover<5->{(\texttt{P ∨ Q})} & \uncover<5->{Disjunction ($P \lor Q$)}
+  \end{tabular}
+  \end{center}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% SLIDE 13: Dependent Types — Quantifiers and Subtypes
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{Dependent Types: Quantifiers ($\forall$, $\exists$) and Subtypes}
+  In Lean 4, \textbf{types can depend on values}: a family of propositions $P(x)$ is simply a function \texttt{P : α → Prop} mapping each value \texttt{x : α} to a proposition \texttt{P x}.
+
+  \vspace{0.15cm}
+  \begin{itemize}
+    \item \textbf{Universal Quantifier ($\forall x : \alpha,\, P(x)$) $\longleftrightarrow$ Dependent Function (\texttt{(x : α) → P x}):} \\
+      A function that takes any input \texttt{x : α} and returns a proof of \texttt{P x} for that specific \texttt{x}.
+
+    \item \textbf{Existential Quantifier ($\exists x : \alpha,\, P(x)$) $\longleftrightarrow$ Dependent Pair (\texttt{⟨x, h⟩}):} \\
+      A structure packing a concrete witness \texttt{x : α} together with a proof \texttt{h : P x}.
+
+    \item \textbf{Data + Proofs in Physics (e.g.\ \texttt{Fin N}):} \\
+      A site on an $N$-site ring has type \texttt{Fin N}: a pair bundling a number \texttt{val : ℕ} with a proof \texttt{isLt : val < N}. Out-of-bounds indices cannot even be constructed!
+  \end{itemize}
+
+  \vspace{0.1cm}
+\begin{lstlisting}[language=Lean4]
+-- Universal quantifier (∀ n : ℕ, n = n) is a dependent function:
+#check ∀ (n : ℕ), n = n     -- ∀ (n : ℕ), n = n : Prop
+
+-- Fin N bundles a natural number with a proof that it is strictly less than N:
+structure Fin (N : ℕ) where
+  val  : ℕ
+  isLt : val < N
+\end{lstlisting}
+\end{frame}
+
+% ============================================================================
+% SECTION 5: PROVING THEOREMS IN LEAN 4
+% ============================================================================
+\section{Proving Theorems in Lean 4}
+
+% ----------------------------------------------------------------------------
+% SLIDE 14: Proving by Direct Term Construction (Term Mode)
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{Proving by Direct Term Construction (Term Mode)}
+  Because a proof of $P$ is just a value of type $P$, we can prove theorems directly by writing a functional program of that type (\textbf{Term Mode}):
+  \begin{itemize}
+    \item \texttt{theorem name (args) : Statement := proof\_term} is identical to \texttt{def}, except its return type lives in \texttt{Prop}.
+    \item \textbf{Implication ($P \to Q$):} Proven by a function \texttt{fun h => ...} mapping a proof \texttt{h : P} to a proof of \texttt{Q}.
+    \item \textbf{Conjunction / Disjunction:} Proven using pair and sum constructors (\texttt{And.intro}, \texttt{Or.inl}).
+  \end{itemize}
+
+  \vspace{0.1cm}
+\begin{lstlisting}[language=Lean4]
+-- 1. Proving P → P using the identity function:
+theorem id_proof (P : Prop) : P → P :=
+  fun (h : P) => h
+
+-- 2. Proving P ∧ Q → Q ∧ P by swapping a pair:
+theorem and_swap (P Q : Prop) : P ∧ Q → Q ∧ P :=
+  fun (h : P ∧ Q) => And.intro h.right h.left
+
+-- 3. Proving P → P ∨ Q by injecting into the left branch:
+theorem or_left (P Q : Prop) : P → P ∨ Q :=
+  fun (h : P) => Or.inl h
+\end{lstlisting}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% SLIDE 15: Interactive Tactic Mode and the Lean Infoview
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{Interactive Tactic Mode and the Lean Infoview}
+  For complex theorems, writing raw proof terms by hand becomes unwieldy. Instead, we enter \textbf{Tactic Mode} using \texttt{by}:
+  \begin{itemize}
+    \item \textbf{Tactics} are metaprograms that build the underlying proof term step by step.
+    \item At every cursor position, the \textbf{Lean Infoview} displays the current \textbf{Proof State}: local hypotheses at the top, and the remaining goal after the turnstile (\texttt{⊢}).
+  \end{itemize}
+
+  \vspace{0.1cm}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Tactic Script (\texttt{by}):}
+\begin{lstlisting}[language=Lean4]
+theorem and_swap (P Q : Prop) :
+    P ∧ Q → Q ∧ P := by
+  intro h
+  constructor
+  · exact h.right
+  · exact h.left
+\end{lstlisting}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \textbf{Lean Infoview (after \texttt{intro h}):}
+\begin{lstlisting}[language=Lean4]
+P Q : Prop
+h : P ∧ Q
+⊢ Q ∧ P
+
+-- `constructor` splits ⊢ Q ∧ P
+-- into two subgoals: ⊢ Q and ⊢ P
+\end{lstlisting}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% SLIDE 16: Core Tactics — rw, simp, ring, and induction
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{Core Tactics: \texttt{rw}, \texttt{simp}, \texttt{ring}, and \texttt{induction}}
+  \begin{itemize}
+    \item \texttt{rw [h]} (\textbf{Rewrite}): Substitutes equals for equals in the goal using equation \texttt{h} (use \texttt{rw [← h]} to rewrite right-to-left).
+    \item \texttt{simp} (\textbf{Simplifier}): Automatically applies tagged simplification lemmas (\texttt{@[simp]}) to reduce the goal.
+    \item \texttt{ring}: Automatically proves any polynomial identity in commutative (semi)rings.
+    \item \texttt{induction n with}: Performs structural induction on an inductive type like \texttt{ℕ}.
+  \end{itemize}
+
+  \vspace{0.1cm}
+\begin{lstlisting}[language=Lean4]
+-- 1. Rewriting with a hypothesis h : a = b
+example (a b c : ℝ) (h : a = b) : a + c = b + c := by
+  rw [h]
+
+-- 2. Automatic ring algebra (no manual expansion needed!)
+example (x y : ℝ) : (x + y)^2 = x^2 + 2*x*y + y^2 := by
+  ring
+
+-- 3. Proving 0 + n = n by mathematical induction on n
+theorem zero_add (n : ℕ) : 0 + n = n := by
+  induction n with
+  | zero      => rfl
+  | succ k ih => rw [Nat.add_succ, ih]
+\end{lstlisting}
+\end{frame}
+
+% ============================================================================
+% SECTION 6: CASE STUDY — 1D TIGHT-BINDING CHAIN
+% ============================================================================
+\section{Case Study: 1D Tight-Binding Chain}
+
+% ----------------------------------------------------------------------------
+% SLIDE 17: 1D Tight-Binding Hamiltonian & Hermiticity
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{1D Tight-Binding Chain: Hamiltonian \& Hermiticity}
+  We model an $N$-site periodic ring (\texttt{Fin N}) with onsite chemical potential $\mu \in \mathbb{R}$ and nearest-neighbor hopping $t \in \mathbb{C}$ as an $N \times N$ matrix $H_{ij} = \mu\delta_{ij} + t\delta_{i,j+1} + t^*\delta_{j,i+1}$:
+
+  \vspace{0.05cm}
+\begin{lstlisting}[language=Lean4]
+variable (N : ℕ) [NeZero N] (μ : ℝ) (t : ℂ)
+
+def onsite (i j : Fin N) := if i = j then (μ : ℂ) else 0
+
+def hopping_forward (i j : Fin N) := if i = j + 1 then t else 0
+
+def hamiltonian_fun (i j : Fin N) :=
+  onsite N μ i j + hopping_forward N t i j + star (hopping_forward N t j i)
+
+def hamiltonian := Matrix.of (hamiltonian_fun N μ t)
+
+theorem isHermitian_hamiltonian : (hamiltonian N μ t).IsHermitian := by
+  ext i j
+  unfold hamiltonian hamiltonian_fun
+  simp only [Matrix.conjTranspose_apply, Matrix.of_apply, star_add,
+    star_star, onsite_conjTranspose_eq_self, add_comm, add_assoc]
+\end{lstlisting}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% SLIDE 18: Bloch Plane Waves & Eigenvalue Theorem
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{Bloch Plane Waves \& Eigenvalue Equation}
+  Translational invariance is captured by indexing momenta with $N$-th roots of unity $u \in \mathbb{C}$ ($u^N = 1$, i.e.\ $u = e^{ik}$), defining normalized Bloch states $\psi_u(j) = u^j / \sqrt{N}$:
+
+  \vspace{0.05cm}
+\begin{lstlisting}[language=Lean4]
+variable (u : rootsOfUnity N ℂ)
+
+noncomputable def planeWaveFun (i : Fin N) : ℂ := ((u ^ i.val).val : ℂ) / √N
+
+noncomputable def planeWave : EuclideanSpace ℂ (Fin N) where
+  ofLp i := planeWaveFun N u i
+
+theorem isEigenvector_planeWave :
+    (hamiltonian N μ t) *ᵥ planeWave N u =
+    (μ + t * u.val⁻¹ + star t * u.val) • planeWave N u := by
+  ext x'
+  rw [Matrix.mulVec_apply]
+  unfold hamiltonian hamiltonian_fun planeWave planeWaveFun
+         dotProduct hopping_forward onsite
+  -- Simplify Kronecker deltas (Finset.sum_ite_eq) and modular exponents:
+  ...
+  · norm_num; norm_cast; simp [inv_u]; ring
+\end{lstlisting}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% SLIDE 19: Orthonormality & Complete Eigenbasis
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{Orthonormality \& Complete Eigenbasis}
+  Finally, we prove that the Bloch waves are orthonormal via the geometric series formula (\texttt{geom\_sum\_eq}) for $u' / u \neq 1$, and promote them to a complete \texttt{OrthonormalBasis} of $\mathbb{C}^N$:
+
+  \vspace{0.05cm}
+\begin{lstlisting}[language=Lean4]
+theorem orthonormal_planeWaves : Orthonormal ℂ (planeWave N) := by
+  constructor
+  · intro u           -- Normalization: ∑ x, ‖planeWaveFun N u x‖^2 = 1
+    ...
+  · intro u u' h_ne   -- Orthogonality (u ≠ u'): geometric sum vanishes
+    ...
+    simp [Fin.sum_univ_eq_sum_range, geom_sum_eq h_ne']
+    simp [div_pow]; norm_cast; simp [u_pow]
+
+-- Since |rootsOfUnity N ℂ| = N = dim(ℂ^N), orthonormality implies completeness:
+noncomputable def planeWaveBasis :
+    Module.Basis (rootsOfUnity N ℂ) ℂ (EuclideanSpace ℂ (Fin N)) := by
+  apply basisOfOrthonormalOfCardEqFinrank (orthonormal_planeWaves N)
+  rw [Fintype.card_eq_nat_card, Complex.card_rootsOfUnity]; simp
+
+noncomputable def planeWaveOrthonormalBasis :
+    OrthonormalBasis (rootsOfUnity N ℂ) ℂ (EuclideanSpace ℂ (Fin N)) :=
+  Basis.toOrthonormalBasis (planeWaveBasis N) (orthonormal_planeWavesBasis N)
+\end{lstlisting}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% SLIDE 20: Summary & Getting Started with Lean 4
+% ----------------------------------------------------------------------------
+\begin{frame}{Summary \& Resources for Getting Started}
+  \textbf{Key Takeaways:}
+  \begin{itemize}
+    \item \textbf{Curry--Howard Isomorphism:} Propositions are types, proofs are programs, and proof verification is just type-checking.
+    \item \textbf{Expressive Type System:} Dependent types (\texttt{Fin N}, \texttt{rootsOfUnity N ℂ}) encode physical constraints and symmetries directly in definitions.
+    \item \textbf{Interactive Proving:} Tactics (\texttt{rw}, \texttt{simp}, \texttt{ring}) automate routine algebra while the Infoview tracks every logical assumption and goal.
+  \end{itemize}
+
+  \vspace{0.15cm}
+  \textbf{Where to Start:}
+  \begin{itemize}
+    \item \textbf{Code from this Seminar:} \texttt{github.com/mpacholski/physics\_in\_lean}
+    \item \textbf{The Natural Number Game:} Interactive browser puzzle game teaching tactics from scratch (\texttt{adam.math.hhu.de}).
+    \item \textbf{Official Textbooks:} \emph{Theorem Proving in Lean 4}, \emph{Mathematics in Lean}, \& \emph{Functional Programming in Lean} (\texttt{lean-lang.org/documentation}).
+    \item \textbf{Mathlib4 \& PhysLean (HepLean):} Community libraries formalizing mathematics and physics (\texttt{leanprover-community.github.io}).
+    \item \textbf{Lean Zulip Chat:} Active, welcoming forum for questions and collaboration (\texttt{leanprover.zulipchat.com}).
+  \end{itemize}
+\end{frame}
+
+\end{document}

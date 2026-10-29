@@ -1,0 +1,295 @@
+\documentclass[11pt, a4paper]{article}
+
+% ============================================================================
+% Packages & Typography
+% ============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsfonts, amsthm, mathtools}
+\usepackage{physics}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\definecolor{fuwblue}{RGB}{0, 51, 102}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=fuwblue,
+  citecolor=fuwblue,
+  urlcolor=fuwblue
+}
+
+\numberwithin{equation}{section}
+
+% ============================================================================
+% Title & Abstract
+% ============================================================================
+\title{\textbf{Linear Response Theory and the Lindhard Polarizability\\of the Three-Dimensional Electron Gas}}
+\author{Lecture Notes --- Faculty of Physics, University of Warsaw}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+We present a self-contained derivation of the dynamical and static Lindhard polarizability $\chi_0(\mathbf{q}, \omega)$ of a three-dimensional homogeneous free electron gas, starting from the time-dependent Schr\"odinger equation. In Section~1, we formulate the interaction picture on a general Hilbert space, derive the first-order Kubo linear response commutator for a time-dependent perturbation, and evaluate the frequency-space response under adiabatic switching to obtain the two-pole Lehmann representation. In Section~2, we specialize the abstract framework to the second-quantized many-body jellium model and reduce the density-density response to a single-particle integral over the Fermi sea. In Section~3, we evaluate the continuous momentum integral for a parabolic band $\varepsilon(\mathbf{k}) = \norm{\mathbf{k}}^2/(2m)$ and derive the exact radial primitive in the static limit, exhibiting the logarithmic singularity at $q = 2k_F$ responsible for Friedel oscillations and the Kohn anomaly.
+\end{abstract}
+
+\tableofcontents
+\vspace{1em}
+\hrule
+\vspace{1.5em}
+
+% ============================================================================
+% SECTION 1: THE INTERACTION PICTURE AND KUBO LINEAR RESPONSE
+% ============================================================================
+\section{The Interaction Picture and Kubo Linear Response}
+
+Consider a quantum system whose state vectors reside in a complex Hilbert space $\mathcal{H}$ equipped with the inner product $\langle \phi, \psi \rangle$, taken to be conjugate-linear in the first argument and linear in the second argument. We work in natural units where $\hbar = 1$.
+
+\subsection{Free Evolution and the Interaction Picture}
+
+Let the total Hamiltonian of the system be decomposed into a time-independent unperturbed Hamiltonian $H_0$ and a time-dependent perturbation $V(t)$:
+\begin{equation}
+  H(t) = H_0 + V(t).
+\end{equation}
+In the Schr\"odinger picture, the state trajectory $\Psi_S(t)$ evolves according to the time-dependent Schr\"odinger equation:
+\begin{equation}\label{eq:schrodinger_eq}
+  \dv{t} \Psi_S(t) = -i \big( H_0 \Psi_S(t) + V(t) \Psi_S(t) \big).
+\end{equation}
+To isolate the dynamics generated specifically by the perturbation $V(t)$, we introduce the unperturbed evolution operator $U_0(t)$ defined via the operator exponential:
+\begin{equation}\label{eq:U0_def}
+  U_0(t) := \exp(-i H_0 t) = \sum_{n=0}^{\infty} \frac{(-i t H_0)^n}{n!}.
+\end{equation}
+Because $t(-i H_0)$ and $(-t)(-i H_0)$ commute for any $t$, the exponential addition law implies the group inversion identity:
+\begin{equation}\label{eq:U0_inv}
+  U_0(t) U_0(-t) = \exp\!\big(-i H_0 t + i H_0 t\big) = \exp(0) = \mathbf{1}.
+\end{equation}
+Differentiating the power series \eqref{eq:U0_def} with respect to $t$ yields the forward and backward equations of motion for the free propagator:
+\begin{equation}\label{eq:U0_derivs}
+  \dv{t} U_0(t) = -i \, U_0(t) H_0, \qquad \dv{t} U_0(-t) = +i \, U_0(-t) H_0,
+\end{equation}
+where the second identity follows from the chain rule under $t \mapsto -t$.
+
+We now pass to the \emph{interaction picture} by transforming state vectors and operators via the backward propagator $U_0(-t)$:
+\begin{align}
+  \Psi_I(t) &:= U_0(-t) \Psi_S(t), \label{eq:Psi_I} \\
+  V_I(t) &:= U_0(-t) \, V(t) \, U_0(t), \label{eq:V_I} \\
+  A_I(t) &:= U_0(-t) \, A \, U_0(t), \label{eq:A_I}
+\end{align}
+where $A$ is any time-independent Schr\"odinger-picture observable. Differentiating $\Psi_I(t)$ with respect to $t$ via the Leibniz product rule and substituting Eqs.~\eqref{eq:schrodinger_eq} and \eqref{eq:U0_derivs} cancels the free drift $H_0$:
+\begin{align}
+  \dv{t} \Psi_I(t)
+  &= \left( \dv{t} U_0(-t) \right) \Psi_S(t) + U_0(-t) \left( \dv{t} \Psi_S(t) \right) \nonumber \\
+  &= +i U_0(-t) H_0 \Psi_S(t) + U_0(-t) \big( -i H_0 \Psi_S(t) - i V(t) \Psi_S(t) \big) \nonumber \\
+  &= -i U_0(-t) V(t) \Psi_S(t).
+\end{align}
+Inserting the identity $\mathbf{1} = U_0(t) U_0(-t)$ from Eq.~\eqref{eq:U0_inv} between $V(t)$ and $\Psi_S(t)$ yields the interaction-picture equation of motion:
+\begin{equation}\label{eq:interaction_schrodinger}
+  \dv{t} \Psi_I(t) = -i U_0(-t) V(t) U_0(t) U_0(-t) \Psi_S(t) = -i \, V_I(t) \Psi_I(t).
+\end{equation}
+
+\subsection{First-Order Perturbation Theory and the Kubo Commutator}
+
+To extract the linear response to the perturbation, we rescale $V(t) \mapsto g V(t)$ by a dimensionless coupling parameter $g$ and denote the corresponding state at time $t$ by $\Phi(g)$, with unperturbed initial state $\Phi(0) = \psi_0$ and first-order variation $\delta\Phi = \eval{\dv{\Phi}{g}}_{g=0}$. Differentiating the interaction-picture generator $-i \big(g V_I(t)\big) \Phi(g)$ with respect to $g$ at $g = 0$ by the product rule isolates the first-order source term:
+\begin{equation}\label{eq:perturbation_zero}
+  \eval{\dv{g} \Big( -i g V_I(t) \Phi(g) \Big)}_{g=0}
+  = -i \left( V_I(t) \Phi(0) + 0 \cdot V_I(t) \delta\Phi \right)
+  = -i \, V_I(t) \psi_0.
+\end{equation}
+Thus, to first order in the perturbation, the state trajectory satisfies $\dv{s} \delta\Psi_I(s) = -i V_I(s) \psi_0$, so each past instant $s \le t$ contributes an infinitesimal state variation:
+\begin{equation}
+  \delta\psi(s) = -i \, V_I(s) \psi_0.
+\end{equation}
+
+Consider the expectation value $\langle \Psi_I(t), A_I(t) \Psi_I(t) \rangle$ of an observable $A$ at time $t$. A first-order variation $\delta\psi = -i V_I(s) \psi_0$ of the state produces the linear shift:
+\begin{equation}
+  \delta\langle A(t) \rangle_s = \langle \delta\psi, A_I(t) \psi_0 \rangle + \langle \psi_0, A_I(t) \delta\psi \rangle.
+\end{equation}
+Assuming the perturbation $V_I(s)$ is self-adjoint ($\langle V_I(s) x, y \rangle = \langle x, V_I(s) y \rangle$ for all $x, y \in \mathcal{H}$), we use the conjugate-linearity of the inner product in the first slot (which pulls out $-i$ as $+i$) and linearity in the second slot:
+\begin{align}
+  \langle -i V_I(s) \psi_0, A_I(t) \psi_0 \rangle + \langle \psi_0, A_I(t) (-i V_I(s) \psi_0) \rangle
+  &= +i \langle V_I(s) \psi_0, A_I(t) \psi_0 \rangle - i \langle \psi_0, A_I(t) V_I(s) \psi_0 \rangle \nonumber \\
+  &= +i \langle \psi_0, V_I(s) A_I(t) \psi_0 \rangle - i \langle \psi_0, A_I(t) V_I(s) \psi_0 \rangle \nonumber \\
+  &= -i \, \big\langle \psi_0, \comm{A_I(t)}{V_I(s)} \psi_0 \big\rangle, \label{eq:kubo_commutator}
+\end{align}
+where $\comm{X}{Y} := X Y - Y X$. Integrating this commutator over the history $s \in (-\infty, t]$ yields the time-domain Kubo formula:
+\begin{equation}
+  \delta\langle A(t) \rangle = -i \int_{-\infty}^{t} \dd{s} \, \big\langle \psi_0, \comm{A_I(t)}{V_I(s)} \psi_0 \big\rangle.
+\end{equation}
+
+\subsection{Adiabatic Switching and the Two-Pole Lehmann Representation}
+
+Suppose the perturbation is switched on adiabatically from the distant past $s \to -\infty$ with complex frequency $z = \omega + i\eta$ ($\eta > 0$). For a transition between the ground state $\psi_0$ (with energy $E_0$) and an excited eigenstate component $\phi$ (with energy $E_n$ and Bohr transition frequency $\Delta E = E_n - E_0$), the interaction-picture source oscillates in time as:
+\begin{equation}
+  \dv{s} \delta\Psi_\phi(s) = \big( -i \, e^{-i (z - \Delta E) s} \big) \phi.
+\end{equation}
+Provided $z - \Delta E \neq 0$ (which is guaranteed for all real $\Delta E$ whenever $\eta > 0$), differentiation with respect to $s$ confirms the exact integrated state trajectory:
+\begin{equation}\label{eq:lindhard_mode}
+  \dv{s} \left( \frac{e^{-i (z - \Delta E) s}}{z - \Delta E} \, \phi \right)
+  = \frac{-i(z - \Delta E) e^{-i (z - \Delta E) s}}{z - \Delta E} \, \phi
+  = \big( -i \, e^{-i (z - \Delta E) s} \big) \phi.
+\end{equation}
+Because $\eta > 0$, the exponential vanishes at the lower limit $s \to -\infty$. Factoring out the overall harmonic time dependence $e^{-i z t}$ (or evaluating the integrated amplitude at $t = 0$), the resonant ket shift and anti-resonant bra shift take the form:
+\begin{equation}
+  \delta\psi_{\mathrm{ket}} = \frac{1}{z - \Delta E} \, \phi, \qquad
+  \delta\psi_{\mathrm{bra}} = -\frac{1}{\bar{z} + \overline{\Delta E}} \, \phi.
+\end{equation}
+Substituting these amplitudes into the expectation-value variation of $A$ and using the conjugate-linearity of the first inner-product slot ($\overline{-(\bar{z} + \overline{\Delta E})^{-1}} = -(z + \Delta E)^{-1}$) yields the two-pole Lehmann susceptibility for the transition mode:
+\begin{equation}\label{eq:two_pole_lehmann}
+  \langle \delta\psi_{\mathrm{bra}}, A \psi_0 \rangle + \langle \psi_0, A \delta\psi_{\mathrm{ket}} \rangle
+  = \frac{\langle \psi_0, A \phi \rangle}{z - \Delta E} - \frac{\langle \phi, A \psi_0 \rangle}{z + \Delta E}.
+\end{equation}
+
+% ============================================================================
+% SECTION 2: MANY-BODY REDUCTION FOR THE HOMOGENEOUS ELECTRON GAS
+% ============================================================================
+\section{Application to the Homogeneous Free Electron Gas}
+
+We now specialize the general linear response formalism of Section~1 to the density response of a three-dimensional non-interacting electron gas (jellium) of particle mass $m$ and Fermi wavenumber $k_F$.
+
+\subsection{Second-Quantized Hamiltonian and Density Perturbation}
+
+In second quantization, the many-body fermionic Fock space is generated by creation and annihilation operators $\hat{c}^\dagger_{\mathbf{k}}, \hat{c}_{\mathbf{k}}$ indexed by continuous momentum $\mathbf{k} \in \mathbb{R}^3$ (suppressing spin degeneracy, which contributes an overall factor of $2$), obeying the canonical anticommutation relations:
+\begin{equation}
+  \acomm{\hat{c}_{\mathbf{k}}}{\hat{c}^\dagger_{\mathbf{k}'}} = (2\pi)^3 \delta^{(3)}(\mathbf{k} - \mathbf{k}'), \qquad
+  \acomm{\hat{c}_{\mathbf{k}}}{\hat{c}_{\mathbf{k}'}} = \acomm{\hat{c}^\dagger_{\mathbf{k}}}{\hat{c}^\dagger_{\mathbf{k}'}} = 0.
+\end{equation}
+The unperturbed Hamiltonian $H_0$ describes free fermions with parabolic dispersion $\varepsilon(\mathbf{k})$:
+\begin{equation}
+  H_0 = \int \frac{\dd[3]{\mathbf{k}}}{(2\pi)^3} \, \varepsilon(\mathbf{k}) \, \hat{c}^\dagger_{\mathbf{k}} \hat{c}_{\mathbf{k}}, \qquad
+  \varepsilon(\mathbf{k}) = \frac{\norm{\mathbf{k}}^2}{2m}.
+\end{equation}
+The unperturbed ground state $\psi_0 = \ket{\mathrm{FS}}$ is the filled Fermi sphere, characterized by the occupation number expectation value:
+\begin{equation}\label{eq:fermi_occupation}
+  \langle \psi_0, \hat{c}^\dagger_{\mathbf{k}} \hat{c}_{\mathbf{k}'} \psi_0 \rangle
+  = (2\pi)^3 \delta^{(3)}(\mathbf{k} - \mathbf{k}') \, n_F(\mathbf{k}), \qquad
+  n_F(\mathbf{k}) = \Theta(k_F - \norm{\mathbf{k}}).
+\end{equation}
+We subject the electron gas to an external scalar potential with Fourier amplitude $\phi_{\mathrm{ext}}(\mathbf{q}, z)$ at wavevector $\mathbf{q}$ and complex frequency $z = \omega + i\eta$, which couples to the Fourier component of the electron density operator:
+\begin{equation}
+  A = \hat{\rho}(\mathbf{q}) = \int \frac{\dd[3]{\mathbf{k}}}{(2\pi)^3} \, \hat{c}^\dagger_{\mathbf{k}-\mathbf{q}} \hat{c}_{\mathbf{k}}, \qquad
+  V(t) = e^{-i z t} \, \phi_{\mathrm{ext}}(\mathbf{q}, z) \, \hat{\rho}(-\mathbf{q}).
+\end{equation}
+
+\subsection{Particle-Hole Excitations and Pauli Blocking Cancellation}
+
+Acting with $\hat{\rho}(-\mathbf{q}) = \int \frac{\dd[3]{\mathbf{k}}}{(2\pi)^3} \hat{c}^\dagger_{\mathbf{k}+\mathbf{q}} \hat{c}_{\mathbf{k}}$ on the ground state $\psi_0$ annihilates a fermion at momentum $\mathbf{k}$ inside the Fermi sea and creates a fermion at momentum $\mathbf{k} + \mathbf{q}$ outside the Fermi sea. The corresponding particle-hole excitation energy is:
+\begin{equation}
+  \Delta E_{\mathbf{k}, \mathbf{q}} = \varepsilon(\mathbf{k} + \mathbf{q}) - \varepsilon(\mathbf{k}).
+\end{equation}
+By the Pauli exclusion principle, the resonant transition $\mathbf{k} \to \mathbf{k} + \mathbf{q}$ carries weight $n_F(\mathbf{k})\big(1 - n_F(\mathbf{k}+\mathbf{q})\big)$, while the anti-resonant de-excitation term in Eq.~\eqref{eq:two_pole_lehmann} carries weight $n_F(\mathbf{k})\big(1 - n_F(\mathbf{k}-\mathbf{q})\big)$ with energy difference $\varepsilon(\mathbf{k}) - \varepsilon(\mathbf{k}-\mathbf{q})$. Integrating Eq.~\eqref{eq:two_pole_lehmann} over all momenta $\mathbf{k}$ yields the dynamical density response function (polarizability):
+\begin{equation}\label{eq:pauli_two_pole}
+  \chi_0(\mathbf{q}, z)
+  = \int \frac{\dd[3]{\mathbf{k}}}{(2\pi)^3} \left[
+    \frac{n_F(\mathbf{k})\big(1 - n_F(\mathbf{k}+\mathbf{q})\big)}{z - \big(\varepsilon(\mathbf{k}+\mathbf{q}) - \varepsilon(\mathbf{k})\big)}
+    - \frac{n_F(\mathbf{k})\big(1 - n_F(\mathbf{k}-\mathbf{q})\big)}{z - \big(\varepsilon(\mathbf{k}) - \varepsilon(\mathbf{k}-\mathbf{q})\big)}
+  \right].
+\end{equation}
+Notice that when we shift the integration variable $\mathbf{k} \mapsto \mathbf{k} + \mathbf{q}$ in the second term, the quadratic occupation product $-n_F(\mathbf{k}) n_F(\mathbf{k}+\mathbf{q})$ appears with identical denominators in both terms and cancels identically. Consequently, we may drop the quadratic Pauli-blocking product from the outset and write the two-pole susceptibility directly in terms of linear occupations $n_F(\mathbf{k})$.
+
+\emph{(Equivalently, evaluating the equal-momentum commutator $\comm{\hat{c}^\dagger_{\mathbf{k}}\hat{c}_{\mathbf{k}+\mathbf{q}}}{\hat{c}^\dagger_{\mathbf{k}+\mathbf{q}}\hat{c}_{\mathbf{k}}} = \hat{c}^\dagger_{\mathbf{k}}\hat{c}_{\mathbf{k}} - \hat{c}^\dagger_{\mathbf{k}+\mathbf{q}}\hat{c}_{\mathbf{k}+\mathbf{q}}$ directly inside the Kubo formula \eqref{eq:kubo_commutator} produces the linear difference $n_F(\mathbf{k}) - n_F(\mathbf{k}+\mathbf{q})$ without intermediate quadratic terms.)}
+
+% ============================================================================
+% SECTION 3: EVALUATING THE 3D LINDHARD INTEGRAL
+% ============================================================================
+\section{Evaluating the Three-Dimensional Lindhard Integral}
+
+\subsection{Parabolic Band Kinematics and Momentum-Space Translation}
+
+For the quadratic dispersion $\varepsilon(\mathbf{k}) = \norm{\mathbf{k}}^2 / (2m)$ on a real inner product space, expanding the squared norm $\norm{\mathbf{k} + \mathbf{q}}^2 = \norm{\mathbf{k}}^2 + 2 \langle \mathbf{k}, \mathbf{q} \rangle + \norm{\mathbf{q}}^2$ cancels the $\norm{\mathbf{k}}^2/(2m)$ kinetic energy and gives the particle-hole excitation energy:
+\begin{equation}\label{eq:quadratic_sub}
+  \varepsilon(\mathbf{k} + \mathbf{q}) - \varepsilon(\mathbf{k})
+  = \frac{\norm{\mathbf{k} + \mathbf{q}}^2 - \norm{\mathbf{k}}^2}{2m}
+  = \frac{2 \langle \mathbf{k}, \mathbf{q} \rangle + \norm{\mathbf{q}}^2}{2m}.
+\end{equation}
+
+Starting from the two-pole integral representation (suppressing the overall phase-space factor $(2\pi)^{-3}$ for clarity):
+\begin{equation}\label{eq:lindhard_two_pole_int}
+  \chi_{\mathrm{two\text{-}pole}}(\mathbf{q}, z)
+  = \int \dd{\mathbf{k}} \, \frac{n_F(\mathbf{k})}{z - \big(\varepsilon(\mathbf{k}+\mathbf{q}) - \varepsilon(\mathbf{k})\big)}
+  - \int \dd{\mathbf{k}} \, \frac{n_F(\mathbf{k})}{z - \big(\varepsilon(\mathbf{k}) - \varepsilon(\mathbf{k}-\mathbf{q})\big)},
+\end{equation}
+where both integrals are separately integrable for $\Im z = \eta > 0$ since $n_F(\mathbf{k})$ has compact support inside the Fermi sphere $\norm{\mathbf{k}} \le k_F$. By translation invariance of the Lebesgue measure ($\dd{(\mathbf{k}+\mathbf{q})} = \dd{\mathbf{k}}$), we shift the integration variable $\mathbf{k} \mapsto \mathbf{k} + \mathbf{q}$ in the second integral:
+\begin{equation}
+  \int \dd{\mathbf{k}} \, \frac{n_F(\mathbf{k})}{z - \big(\varepsilon(\mathbf{k}) - \varepsilon(\mathbf{k}-\mathbf{q})\big)}
+  = \int \dd{\mathbf{k}} \, \frac{n_F(\mathbf{k}+\mathbf{q})}{z - \big(\varepsilon(\mathbf{k}+\mathbf{q}) - \varepsilon(\mathbf{k})\big)}.
+\end{equation}
+Combining the two integrals over their common denominator and substituting the kinematic identity \eqref{eq:quadratic_sub} yields the canonical Lindhard polarizability integral:
+\begin{align}
+  \chi_0(\mathbf{q}, z)
+  &= \int \dd{\mathbf{k}} \, \frac{n_F(\mathbf{k}) - n_F(\mathbf{k}+\mathbf{q})}{z - \big(\varepsilon(\mathbf{k}+\mathbf{q}) - \varepsilon(\mathbf{k})\big)} \nonumber \\
+  &= \int \dd{\mathbf{k}} \, \frac{n_F(\mathbf{k}) - n_F(\mathbf{k}+\mathbf{q})}{z - \dfrac{2 \langle \mathbf{k}, \mathbf{q} \rangle + \norm{\mathbf{q}}^2}{2m}}. \label{eq:lindhard_canonical}
+\end{align}
+
+\subsection{Spherical Coordinates and Polar Angle Integration in the Static Limit}
+
+We now evaluate $\chi_0(\mathbf{q}, z)$ in three dimensions in the static limit $z \to 0$. Using the symmetry $\mathbf{k} \mapsto -\mathbf{k}$ of the Fermi sphere $n_F(\mathbf{k}) = \Theta(k_F - \norm{\mathbf{k}})$, the two terms in Eq.~\eqref{eq:lindhard_two_pole_int} give equal contributions at $z = 0$:
+\begin{equation}
+  \chi_0(\mathbf{q}, 0)
+  = -4m \int_{\norm{\mathbf{k}} \le k_F} \frac{\dd[3]{\mathbf{k}}}{(2\pi)^3} \, \frac{1}{2 \langle \mathbf{k}, \mathbf{q} \rangle + q^2},
+\end{equation}
+where $q = \norm{\mathbf{q}} > 0$. Introducing spherical coordinates $(k, \theta, \phi)$ with the polar axis parallel to $\mathbf{q}$, we set $u = \cos\theta \in [-1, 1]$ so that $\langle \mathbf{k}, \mathbf{q} \rangle = k q u$ and $\dd[3]{\mathbf{k}} = 2\pi k^2 \dd{k} \dd{u}$.
+
+Performing the elementary integration over $u \in [-1, 1]$ first gives:
+\begin{equation}
+  \int_{-1}^{1} \frac{\dd{u}}{2 k q u + q^2}
+  = \left[ \frac{1}{2kq} \ln\abs{2kqu + q^2} \right]_{u=-1}^{u=1}
+  = \frac{1}{2kq} \Big( \ln\abs{2k + q} - \ln\abs{2k - q} \Big).
+\end{equation}
+Multiplying by the radial Jacobian $k^2 \dd{k}$ cancels the $1/k$ prefactor:
+\begin{equation}\label{eq:chi0_radial_form}
+  \chi_0(q, 0) = -\frac{m}{2\pi^2 q} \int_0^{k_F} \dd{k} \, k \Big( \ln\abs{2k + q} - \ln\abs{2k - q} \Big).
+\end{equation}
+
+\subsection{Exact Radial Primitive and the $q = 2k_F$ Singularity}
+
+To evaluate the remaining radial integral in Eq.~\eqref{eq:chi0_radial_form}, we introduce the radial primitive function:
+\begin{equation}\label{eq:radial_primitive}
+  F(q, k) := \frac{1}{2}\left(k^2 - \frac{q^2}{4}\right) \Big( \ln\abs{2k + q} - \ln\abs{2k - q} \Big) + \frac{1}{2} q k.
+\end{equation}
+We verify that $\dv{k} F(q, k) = k \big(\ln\abs{2k + q} - \ln\abs{2k - q}\big)$ for all $2k + q \neq 0$ and $2k - q \neq 0$ by differentiating each component:
+\begin{enumerate}
+  \item The derivative of the quadratic polynomial factor is:
+    \begin{equation}
+      \dv{k}\left[ \frac{1}{2}\left(k^2 - \frac{q^2}{4}\right) \right] = k.
+    \end{equation}
+  \item The derivative of the logarithmic difference is:
+    \begin{equation}
+      \dv{k}\Big[ \ln\abs{2k + q} - \ln\abs{2k - q} \Big]
+      = \frac{2}{2k + q} - \frac{2}{2k - q}
+      = \frac{-4q}{(2k + q)(2k - q)}.
+    \end{equation}
+  \item The derivative of the linear counterterm is:
+    \begin{equation}
+      \dv{k}\left[ \frac{1}{2} q k \right] = \frac{1}{2} q.
+    \end{equation}
+\end{enumerate}
+Applying the product rule to $F(q, k)$ and factoring $k^2 - \frac{q^2}{4} = \frac{(2k + q)(2k - q)}{4}$ gives:
+\begin{align}\label{eq:antideriv_trick}
+  \dv{k} F(q, k)
+  &= k \Big( \ln\abs{2k + q} - \ln\abs{2k - q} \Big)
+     + \frac{1}{2}\left( \frac{(2k + q)(2k - q)}{4} \right) \left( \frac{-4q}{(2k + q)(2k - q)} \right) + \frac{1}{2} q \nonumber \\
+  &= k \Big( \ln\abs{2k + q} - \ln\abs{2k - q} \Big)
+     + \left( -\frac{4q}{8} \right) \frac{(2k + q)(2k - q)}{(2k + q)(2k - q)} + \frac{1}{2} q \nonumber \\
+  &= k \Big( \ln\abs{2k + q} - \ln\abs{2k - q} \Big) - \frac{1}{2} q + \frac{1}{2} q \nonumber \\
+  &= k \ln\abs{\frac{2k + q}{2k - q}}.
+\end{align}
+
+At the lower integration limit $k = 0$, the primitive vanishes identically because $\ln\abs{q} = \ln\abs{-q}$:
+\begin{equation}
+  F(q, 0) = -\frac{q^2}{8} \Big( \ln\abs{q} - \ln\abs{-q} \Big) + 0 = 0.
+\end{equation}
+Evaluating $F(q, k_F) - F(q, 0)$ inside Eq.~\eqref{eq:chi0_radial_form} (and restoring a factor of $2$ for electron spin) yields the static 3D Lindhard polarizability:
+\begin{equation}
+  \chi_0(q, 0)
+  = -\frac{m k_F}{2\pi^2} \left[
+    1 + \frac{k_F}{q} \left( 1 - \frac{q^2}{4k_F^2} \right) \ln\abs{\frac{2k_F + q}{2k_F - q}}
+  \right].
+\end{equation}
+At the spanning wavevector $q = 2k_F$ connecting opposite antipodal points on the Fermi sphere, the argument $2k_F - q$ of the logarithm vanishes and the slope $\dv{\chi_0(q,0)}{q}$ diverges logarithmically, giving rise to the Kohn anomaly in lattice phonon spectra and oscillatory Friedel screening $\delta\rho(r) \propto \cos(2k_F r)/r^3$ at large distances.
+
+\end{document}
