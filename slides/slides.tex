@@ -67,6 +67,8 @@
 \DeclareUnicodeCharacter{207B}{\ensuremath{^-}}
 \DeclareUnicodeCharacter{00B9}{\ensuremath{^1}}
 \DeclareUnicodeCharacter{2022}{\ensuremath{\bullet}}
+\DeclareUnicodeCharacter{03B4}{\ensuremath{\delta}} % δ
+\DeclareUnicodeCharacter{2265}{\ensuremath{\ge}}    % ≥
 
 % ============================================================================
 % BEAMER THEME & COLORS
@@ -169,6 +171,8 @@
     {⁻}{{$^-$}}1
     {¹}{{$^1$}}1
     {•}{{$\bullet$}}1
+    {δ}{{$\delta$}}1
+    {≥}{{$\ge$}}1
 }
 
 % ============================================================================
@@ -694,29 +698,55 @@ theorem isHermitian_hamiltonian : (hamiltonian N μ t).IsHermitian := by
 \end{frame}
 
 % ----------------------------------------------------------------------------
-% SLIDE 18: Bloch Plane Waves & Eigenvalue Theorem
+% SLIDE 18a: Eigenstate Proof — Step-by-Step Mathematical Derivation
 % ----------------------------------------------------------------------------
-\begin{frame}[fragile]{Bloch Plane Waves \& Eigenvalue Equation}
-  Translational invariance is captured by indexing momenta with $N$-th roots of unity $u \in \mathbb{C}$ ($u^N = 1$, i.e.\ $u = e^{ik}$), defining normalized Bloch states $\psi_u(j) = u^j / \sqrt{N}$:
+\begin{frame}{Bloch Eigenstate Theorem: Step-by-Step Derivation}
+  \textbf{Claim:} For $\psi_u(j) = \frac{u^j}{\sqrt{N}}$ with $u^N = 1$, we have $H\psi_u = (\mu + t u^{-1} + t^* u)\psi_u$.
 
   \vspace{0.05cm}
+  \begin{enumerate}
+    \item \textbf{Expand the matrix-vector product at site $i \in \{0, \dots, N-1\}$:}
+    \[
+      (H\psi_u)_i = \sum_{j=0}^{N-1} \Bigl(\mu\,\delta_{i,j} + t\,\delta_{i,\,(j+1)\bmod N} + t^*\,\delta_{j,\,(i+1)\bmod N}\Bigr)\frac{u^j}{\sqrt{N}}
+    \]
+    \item \textbf{Evaluate the Kronecker deltas:}
+    Rewriting $i \equiv j + 1 \pmod N \iff (i - 1)\bmod N = j$ collapses the sum to:
+    \[
+      (H\psi_u)_i = \mu\,\frac{u^i}{\sqrt{N}} + t\,\frac{u^{(i - 1)\bmod N}}{\sqrt{N}} + t^*\,\frac{u^{(i + 1)\bmod N}}{\sqrt{N}}
+    \]
+    \item \textbf{Apply periodicity ($u^m = u^{m \bmod N}$ since $u^N = 1$):}
+    In the third term, $u^{(i+1)\bmod N} = u^{i+1}$. In the second term, subtraction modulo $N$ is defined by shifting by $N$: $(i - 1)\bmod N = (N - 1 + i)\bmod N$.
+    \item \textbf{Check boundary cases on $N$ and factor:}
+    \begin{itemize}
+      \item For $N = 1$: $u = 1$ and $i = 0$, so both sides immediately equal $\mu + t + t^*$.
+      \item For $N \ge 2$: $u^{(N - 1 + i)\bmod N} = u^{N - 1 + i} = u^{N-1}u^i = u^{-1}u^i$, giving $(\mu + t u^{-1} + t^* u)\frac{u^i}{\sqrt{N}}$.
+    \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% SLIDE 18b: Bloch Plane Waves & Eigenvalue Proof in Lean 4
+% ----------------------------------------------------------------------------
+\begin{frame}[fragile]{Bloch Eigenstate Proof in Lean 4}
 \begin{lstlisting}[language=Lean4]
-variable (u : rootsOfUnity N ℂ)
-
-noncomputable def planeWaveFun (i : Fin N) : ℂ := ((u ^ i.val).val : ℂ) / √N
-
-noncomputable def planeWave : EuclideanSpace ℂ (Fin N) where
-  ofLp i := planeWaveFun N u i
-
 theorem isEigenvector_planeWave :
     (hamiltonian N μ t) *ᵥ planeWave N u =
     (μ + t * u.val⁻¹ + star t * u.val) • planeWave N u := by
-  ext x'
-  rw [Matrix.mulVec_apply]
-  unfold hamiltonian hamiltonian_fun planeWave planeWaveFun
-         dotProduct hopping_forward onsite
-  -- Simplify Kronecker deltas (Finset.sum_ite_eq) and modular exponents:
-  ...
+  ext x'; rw [Matrix.mulVec_apply]                        -- 1. Entrywise at site x'
+  unfold hamiltonian hamiltonian_fun planeWave planeWaveFun dotProduct hopping_forward onsite
+  simp only [Matrix.row_apply, Matrix.of_apply, add_mul, apply_ite star, star_zero,
+    ite_mul, zero_mul, Finset.sum_add_distrib, Finset.sum_ite_eq, Finset.sum_ite_eq',
+    Finset.sum_ite_add_eq_sum_ite_sub, Finset.mem_univ, ite_true, Pi.smul_apply,
+    smul_eq_mul, Fin.val_sub, Fin.val_add, Fin.val_one']  -- 2. Collapse Kronecker δs
+  have pow_mod : ∀ m : ℕ, u ^ m = u ^ (m % N : ℕ) := by   -- 3. u^m depends only on m mod N
+    intro m; obtain ⟨uv, hu⟩ := u
+    simp only [SubmonoidClass.mk_pow, Subtype.mk.injEq]; exact pow_eq_pow_mod m hu
+  simp only [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val, ← pow_mod, RCLike.star_def,
+    Nat.add_mod_mod, Units.val_inv_eq_inv_val]
+  rcases N with _ | N | N                                 -- 4. Split N = 0, N = 1, N ≥ 2
+  · exact absurd rfl (NeZero.ne 0)
+  · norm_num; have hu : u = 1 := by simpa using u.property
+    simp [hu]
   · norm_num; norm_cast; simp [inv_u]; ring
 \end{lstlisting}
 \end{frame}
